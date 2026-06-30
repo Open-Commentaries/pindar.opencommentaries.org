@@ -10,30 +10,11 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
     </script>
-    <script>
-      (() => {
-        const setTheme = (theme) => {
-          if (theme === "system") {
-            localStorage.removeItem("phx:theme");
-            document.documentElement.removeAttribute("data-theme");
-          } else {
-            localStorage.setItem("phx:theme", theme);
-            document.documentElement.setAttribute("data-theme", theme);
-          }
-        };
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          setTheme(localStorage.getItem("phx:theme") || "system");
-        }
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        
-        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
-      })();
-    </script>
   </head>
   <body>
     <header class="navbar bg-base-200 px-4 lg:px-8 border-b border-base-300">
       <div class="flex-1">
-        <a href="/" class="text-base font-semibold tracking-tight">Pindar Commentary</a>
+        <a href="/" class="text-base font-semibold tracking-tight">A Pindar Commentary in Progress</a>
       </div>
       <nav class="flex gap-4 text-sm">
         <a href="/" class="hover:text-base-content/70">Home</a>
