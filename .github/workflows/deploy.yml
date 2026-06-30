@@ -36,6 +36,8 @@ jobs:
         restore-keys: ${{ runner.os }}-mix-
     - name: Install dependencies
       run: mix deps.get
+    - name: Build assets
+      run: mix assets.build
     - name: Build site
       run: mix generate_static
     - name: Upload static files as artifact
