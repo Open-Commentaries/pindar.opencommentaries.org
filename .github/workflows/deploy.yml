@@ -22,14 +22,14 @@ jobs:
     # Specify runner +  build & upload the static files as an artifact
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
         elixir-version: '1.19.5' # [Required] Define the Elixir version
         otp-version: '28.1'      # [Required] Define the Erlang/OTP version
     - name: Restore dependencies cache
-      uses: actions/cache@v3
+      uses: actions/cache@v6
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
@@ -40,7 +40,7 @@ jobs:
       run: mix generate_static
     - name: Upload static files as artifact
       id: deployment
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v5
       with:
         path: priv/build
 
@@ -54,4 +54,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
