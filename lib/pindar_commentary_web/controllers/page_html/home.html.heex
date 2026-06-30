@@ -1,0 +1,41 @@
+<Layouts.flash_group flash={@flash} />
+<div class="px-4 py-10 sm:px-6 sm:py-16 lg:px-8 xl:px-28 xl:py-20">
+  <div class="mx-auto max-w-2xl">
+    <h1 class="text-4xl font-bold tracking-tight mb-2">Pindar</h1>
+    <p class="text-base-content/70 mb-10">Select an ode to read.</p>
+
+    <div class="flex flex-col gap-4">
+      <%= for collection <- @collections do %>
+        <details class="group rounded-box border border-base-300 bg-base-100">
+          <summary class="flex cursor-pointer list-none items-center justify-between px-6 py-4 text-lg font-semibold">
+            <%= collection.title %> Odes
+            <svg
+              class="h-5 w-5 transition-transform group-open:rotate-180"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </summary>
+          <ul class="px-6 pb-4 pt-1 flex flex-col gap-1">
+            <%= for poem <- collection.poems do %>
+              <li>
+                <a
+                  href={"/" <> poem["urn"]}
+                  class="block rounded-lg px-3 py-1.5 text-sm hover:bg-base-200 hover:text-base-content transition-colors"
+                >
+                  <%= collection.title %> <%= poem["n"] %>
+                </a>
+              </li>
+            <% end %>
+          </ul>
+        </details>
+      <% end %>
+    </div>
+  </div>
+</div>
