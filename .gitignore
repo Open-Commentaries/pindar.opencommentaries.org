@@ -35,3 +35,4 @@ pindar_commentary-*.tar
 npm-debug.log
 /assets/node_modules/
 
+/priv/build
