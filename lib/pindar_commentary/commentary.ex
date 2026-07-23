@@ -1,18 +1,36 @@
 defmodule PindarCommentary.Commentary do
+  require Logger
+
   @commentary_dir "priv/static/commentary"
+
+  @valid_urn ~r/^[\w.:@-]+$/
 
   # Returns comments for a poem, given a partial URN like "tlg0033.tlg001.perseus-grc2:5".
   # Matches against all commentary files, ignoring version identifiers.
   def get_comments_for_poem(partial_urn) do
+    if Regex.match?(@valid_urn, partial_urn) do
+      do_get_comments_for_poem(partial_urn)
+    else
+      []
+    end
+  end
+
+  defp do_get_comments_for_poem(partial_urn) do
     {work_id, poem_n} = parse_partial_urn(partial_urn)
 
-    @commentary_dir
-    |> File.ls!()
-    |> Enum.flat_map(fn filename ->
-      @commentary_dir |> Path.join(filename) |> parse_file()
-    end)
-    |> Enum.filter(&matches_poem?(&1.urn, work_id, poem_n))
-    |> Enum.sort_by(& &1.citation_start)
+    case File.ls(@commentary_dir) do
+      {:ok, filenames} ->
+        filenames
+        |> Enum.flat_map(fn filename ->
+          @commentary_dir |> Path.join(filename) |> parse_file()
+        end)
+        |> Enum.filter(&matches_poem?(&1.urn, work_id, poem_n))
+        |> Enum.sort_by(& &1.citation_start)
+
+      {:error, reason} ->
+        Logger.warning("Failed to list commentary dir #{@commentary_dir}: #{inspect(reason)}")
+        []
+    end
   end
 
   defp parse_partial_urn(partial_urn) do
@@ -45,17 +63,22 @@ defmodule PindarCommentary.Commentary do
   end
 
   defp parse_file(path) do
-    content = File.read!(path)
+    case File.read(path) do
+      {:ok, content} ->
+        case String.split(content, "\n---\n") do
+          [frontmatter_chunk | comment_chunks] ->
+            frontmatter = frontmatter_chunk |> String.trim_leading("---\n") |> parse_frontmatter()
 
-    case String.split(content, "\n---\n") do
-      [frontmatter_chunk | comment_chunks] ->
-        frontmatter = frontmatter_chunk |> String.trim_leading("---\n") |> parse_frontmatter()
+            comment_chunks
+            |> Enum.map(&parse_comment_block(&1, frontmatter))
+            |> Enum.reject(&is_nil/1)
 
-        comment_chunks
-        |> Enum.map(&parse_comment_block(&1, frontmatter))
-        |> Enum.reject(&is_nil/1)
+          _ ->
+            []
+        end
 
-      _ ->
+      {:error, reason} ->
+        Logger.warning("Failed to read commentary file #{path}: #{inspect(reason)}")
         []
     end
   end
@@ -131,6 +154,10 @@ defmodule PindarCommentary.Commentary do
 
   def render_body(markdown) do
     MDEx.to_html!(markdown, extension: [strikethrough: true, autolink: true])
+  rescue
+    error ->
+      Logger.warning("Failed to render commentary markdown: #{inspect(error)}")
+      markdown |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
   end
 
   # "urn:cts:greekLit:tlg0033.tlg001:5.1-5.8" -> "5.1–5.8"

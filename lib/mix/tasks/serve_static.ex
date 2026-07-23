@@ -38,7 +38,7 @@ defmodule Mix.Tasks.ServeStatic do
       end
 
     app_name = Keyword.fetch!(Mix.Project.get().project(), :app)
-    output_dir = Path.join([:code.priv_dir(app_name) |> to_string(), "build"])
+    output_dir = [:code.priv_dir(app_name) |> to_string(), "build"] |> Path.join() |> Path.expand()
 
     unless File.dir?(output_dir) do
       Mix.raise("Output directory #{output_dir} not found. Run `mix generate_static` first.")
@@ -121,7 +121,7 @@ defmodule Mix.Tasks.ServeStatic do
     # Prevent directory traversal
     file_path = Path.expand(file_path)
 
-    unless String.starts_with?(file_path, output_dir) do
+    unless file_path == output_dir or String.starts_with?(file_path, output_dir <> "/") do
       send_response(socket, 403, "text/plain", "Forbidden")
     else
       case File.read(file_path) do

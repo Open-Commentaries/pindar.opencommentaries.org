@@ -1,16 +1,26 @@
 defmodule PindarCommentary.Texts do
+  require Logger
+
   @json_dir "priv/static/json/tlg0033"
 
   @collections ["tlg001", "tlg002", "tlg003", "tlg004"]
 
+  # Guards against path traversal: partial_urn ends up embedded in a
+  # Path.join/File.ls call below, so reject anything but the characters a
+  # real CTS URN segment can contain (no "/", "..", or encoded separators).
+  @valid_urn ~r/^[\w.:@-]+$/
+
   def collections do
-    Enum.map(@collections, &load_collection/1)
+    @collections
+    |> Enum.map(&load_collection/1)
+    |> Enum.reject(&is_nil/1)
   end
 
   # Accepts a partial URN like "tlg0033.tlg001.perseus-grc2:1".
   # Returns {:ok, poem_data} or :error.
   def get_poem(partial_urn) do
-    with [work_version, n] <- String.split(partial_urn, ":", parts: 2),
+    with true <- Regex.match?(@valid_urn, partial_urn),
+         [work_version, n] <- String.split(partial_urn, ":", parts: 2),
          [_author, _work_id, _version] <- String.split(work_version, "."),
          path when not is_nil(path) <- json_path_for(work_version),
          {:ok, data} <- File.read(path),
@@ -52,20 +62,22 @@ defmodule PindarCommentary.Texts do
   end
 
   defp load_collection(work_id) do
-    path =
-      @json_dir
-      |> Path.join(work_id)
-      |> File.ls!()
-      |> Enum.find(&String.contains?(&1, "grc"))
-      |> then(&Path.join([@json_dir, work_id, &1]))
+    dir = Path.join(@json_dir, work_id)
 
-    data = path |> File.read!() |> Jason.decode!()
+    with {:ok, files} <- File.ls(dir),
+         filename when not is_nil(filename) <- Enum.find(files, &String.contains?(&1, "grc")),
+         {:ok, raw} <- dir |> Path.join(filename) |> File.read(),
+         {:ok, data} <- Jason.decode(raw) do
+      poems =
+        data["textparts"]
+        |> Enum.filter(&(&1["subtype"] == "poem"))
+        |> Enum.sort_by(& &1["index"])
 
-    poems =
-      data["textparts"]
-      |> Enum.filter(&(&1["subtype"] == "poem"))
-      |> Enum.sort_by(& &1["index"])
-
-    %{title: data["title"], urn: data["urn"], poems: poems}
+      %{title: data["title"], urn: data["urn"], poems: poems}
+    else
+      error ->
+        Logger.warning("Failed to load collection #{work_id}: #{inspect(error)}")
+        nil
+    end
   end
 end
