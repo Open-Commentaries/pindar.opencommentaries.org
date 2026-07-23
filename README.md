@@ -9,8 +9,11 @@ To start the development server, run `mix phx.server`.
 ## Deployment
 
 Deployment is handled by a GitHub workflow. It builds a static version of the site
-using `mix generate_static`. You can verify the output of this command by running
-`mix generate_static` and then `mix serve_static` locally before you deploy.
+using `mix generate_static`. This must run with `MIX_ENV=static` so the endpoint's
+dev-only code reloader (and its `/phoenix/live_reload/frame` route) is compiled out
+of the generated pages. You can verify the output of this command by running
+`MIX_ENV=static mix generate_static` and then `mix serve_static` locally before you
+deploy.
 
 # LICENSE
 

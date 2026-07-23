@@ -40,6 +40,8 @@ jobs:
       run: mix assets.build
     - name: Build site
       run: mix generate_static
+      env:
+        MIX_ENV: static
     - name: Upload static files as artifact
       id: deployment
       uses: actions/upload-pages-artifact@v5
