@@ -50,6 +50,16 @@ defmodule Mix.Tasks.GenerateStatic do
     else
       Mix.shell().error("No compiled assets found at #{src} — run `mix assets.build` first")
     end
+
+    img_src = Path.join([File.cwd!(), "priv", "static", "images"])
+    img_dst = Path.join(output_dir, "images")
+
+    if File.exists?(img_src) do
+      {:ok, files} = File.cp_r(img_src, img_dst)
+      Mix.shell().info("  copied #{length(files)} asset(s) to #{img_dst}")
+    else
+      Mix.shell().error("No compiled assets found at #{img_src} — run `mix assets.build` first")
+    end
   end
 
   defp output_dir do
