@@ -16,6 +16,7 @@ defmodule Mix.Tasks.GenerateStatic do
     Enum.each(routes, &generate_html_for_route(&1, output_dir))
 
     copy_assets(output_dir)
+    copy_images(output_dir)
   end
 
   defp ode_routes do
@@ -50,7 +51,9 @@ defmodule Mix.Tasks.GenerateStatic do
     else
       Mix.shell().error("No compiled assets found at #{src} — run `mix assets.build` first")
     end
+  end
 
+  defp copy_images(output_dir) do
     img_src = Path.join([File.cwd!(), "priv", "static", "images"])
     img_dst = Path.join(output_dir, "images")
 
@@ -58,7 +61,7 @@ defmodule Mix.Tasks.GenerateStatic do
       {:ok, files} = File.cp_r(img_src, img_dst)
       Mix.shell().info("  copied #{length(files)} asset(s) to #{img_dst}")
     else
-      Mix.shell().error("No compiled assets found at #{img_src} — run `mix assets.build` first")
+      Mix.shell().error("No compiled images found at #{img_src} — run `mix assets.build` first")
     end
   end
 
