@@ -22,7 +22,7 @@
         <%= for collection <- @collections do %>
           <details class="group rounded-box border border-primary/10 bg-linear-to-br from-primary/5 to-accent/5">
             <summary class="flex cursor-pointer list-none items-center justify-between px-6 py-4 text-lg font-semibold rounded-box hover:bg-primary/10 transition-colors">
-              <%= collection.title %> Odes
+              {collection.title}
               <svg
                 class="h-5 w-5 transition-transform group-open:rotate-180"
                 viewBox="0 0 20 20"
@@ -40,10 +40,10 @@
               <%= for poem <- collection.poems do %>
                 <li>
                   <a
-                    href={"/" <> poem["urn"]}
+                    href={"/" <> poem.urn}
                     class="block rounded-lg px-3 py-1.5 text-sm hover:bg-primary/10 transition-colors"
                   >
-                    <%= collection.title %> <%= poem["n"] %>
+                    {collection.title} {poem.n}
                   </a>
                 </li>
               <% end %>

@@ -38,3 +38,4 @@ npm-debug.log
 /priv/build
 
 .elixir_ls
+.DS_Store

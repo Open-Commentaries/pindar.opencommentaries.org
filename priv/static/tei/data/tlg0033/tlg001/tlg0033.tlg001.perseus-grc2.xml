@@ -50,7 +50,10 @@
         </fileDesc>
         
         <encodingDesc>
-            <refsDecl n="CTS">
+            <refsDecl n="CTS" xml:id="CTS">
+                <citeStructure match="/TEI/text/body" use="@xml:base">
+                    <citeStructure unit="poem" delim=":" match="div[@type='textpart']" use="@n"/>
+                </citeStructure>
                 <cRefPattern n="line" matchPattern="(\w+).(\w+)" replacementPattern="#xpath(/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:l[@n='$2'])">
                     <p>This pointer pattern extracts poem and line.</p>
                 </cRefPattern>

@@ -4,10 +4,10 @@ defmodule PindarCommentaryWeb.OdeController do
   def show(conn, %{"cts_urn" => full_urn}) do
     partial_urn = String.replace_leading(full_urn, "urn:cts:greekLit:", "")
 
-    case PindarCommentary.Texts.get_poem(partial_urn) do
+    case Kodon.Texts.get_poem(PindarCommentaryWeb.Site, partial_urn) do
       {:ok, poem} ->
-        comments = PindarCommentary.Commentary.get_comments_for_poem(partial_urn)
-        collections = PindarCommentary.Texts.collections()
+        comments = Kodon.Commentary.get_comments_for_poem(PindarCommentaryWeb.Site, partial_urn)
+        collections = Kodon.Texts.collections(PindarCommentaryWeb.Site)
         render(conn, :show, poem: poem, comments: comments, collections: collections)
 
       :error ->
