@@ -86,9 +86,10 @@ defmodule PindarCommentaryWeb do
       import Phoenix.HTML
       # Core UI components
       import PindarCommentaryWeb.CoreComponents
-      # TEI text rendering + three-column layout components
-      import Kodon.Components.TextComponents
-      import Kodon.Components.ThreeColumnLayout
+      # TEI text rendering components
+      import PindarCommentaryWeb.TextComponents
+      # Navigation components
+      import PindarCommentaryWeb.NavComponents
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS

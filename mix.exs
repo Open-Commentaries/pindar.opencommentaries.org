@@ -61,8 +61,7 @@ defmodule PindarCommentary.MixProject do
       {:jason, "~> 1.2"},
       {:mdex, "~> 0.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"},
-      {:kodon, github: "pletcher/kodon"}
+      {:bandit, "~> 1.5"}
     ]
   end
 

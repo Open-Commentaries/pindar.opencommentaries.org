@@ -2,7 +2,7 @@ defmodule PindarCommentaryWeb.PageController do
   use PindarCommentaryWeb, :controller
 
   def home(conn, _params) do
-    collections = Kodon.Texts.collections(PindarCommentaryWeb.Site)
+    collections = PindarCommentary.Texts.collections()
     render(conn, :home, collections: collections)
   end
 
